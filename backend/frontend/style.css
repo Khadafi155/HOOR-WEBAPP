@@ -1,0 +1,256 @@
+/* ----------- ROOT CONTAINER ----------- */
+body {
+  margin: 0;
+  padding: 0;
+  background: #f3eaff;  /* soft lavender background */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#hoor-root {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 40px 0;
+}
+
+/* ----------- APP BOX ----------- */
+.hoor-app {
+  width: 100%;
+  height: 75vh;
+  max-height: 760px;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+@media (max-width: 640px) {
+  .hoor-app {
+    height: 82vh;
+    border-radius: 0;
+  }
+}
+
+/* ----------- HEADER ----------- */
+.hoor-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(to right, #fafaff, #f3f4f6);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hoor-header-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Circle Logo */
+.hoor-logo-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid #c5c4d3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hoor-logo-circle::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid #c5c4d3;
+}
+
+.hoor-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.hoor-subtitle {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.hoor-quick-exit {
+  padding: 6px 12px;
+  background: #f3f4f6;
+  font-size: 11px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.hoor-quick-exit:hover {
+  background: #e5e7eb;
+}
+
+/* ----------- CHAT CONTAINER ----------- */
+.hoor-chat-container {
+  flex: 1;
+  padding: 14px 12px;
+  overflow-y: auto;
+  background: radial-gradient(circle at top left, #f4f4ff, #ffffff 40%);
+}
+
+/* Scrollbar */
+.hoor-chat-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.hoor-chat-container::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 20px;
+}
+
+/* ----------- MESSAGE BUBBLES ----------- */
+.hoor-message {
+  margin-bottom: 12px;
+  max-width: 90%;
+}
+
+.hoor-message-user {
+  margin-left: auto;
+  text-align: right;
+}
+
+.hoor-message-assistant {
+  margin-right: auto;
+}
+
+.hoor-message-bubble {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  word-wrap: break-word;
+}
+
+/* User bubble */
+.hoor-message-user .hoor-message-bubble {
+  background: #4b5563;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+/* Assistant bubble */
+.hoor-message-assistant .hoor-message-bubble {
+  background: #f2f3f7;
+  color: #111827;
+  border-bottom-left-radius: 4px;
+}
+
+.hoor-message-meta {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+/* ----------- INPUT BAR ----------- */
+.hoor-input-bar {
+  padding: 10px;
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid #e5e7eb;
+  background: #fafafa;
+}
+
+.hoor-input {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 10px 14px;
+  resize: none;
+  max-height: 120px;
+  font-size: 14px;
+  line-height: 1.45;
+  outline: none;
+}
+
+.hoor-input:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 2px #a78bfa22;
+}
+
+.hoor-send-btn {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
+  background: #111827;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.hoor-send-btn:hover {
+  background: #1f2937;
+}
+
+.hoor-send-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* ----------- NOTES VIEW ----------- */
+.hoor-view-notes {
+  display: none;
+  flex-direction: column;
+}
+
+.hoor-notes-container {
+  flex: 1;
+  padding: 20px;
+  background: #fafafa;
+  overflow-y: auto;
+}
+
+.hoor-notes-container h2 {
+  margin-top: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.hoor-notes-list {
+  padding-left: 0;
+  list-style: none;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.hoor-notes-list li {
+  margin-bottom: 10px;
+}
+
+.hoor-notes-subheading {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #555;
+}
+
+.hoor-notes-textarea {
+  width: 100%;
+  min-height: 100px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px;
+  font-size: 14px;
+  resize: vertical;
+  outline: none;
+}
+
+.hoor-notes-textarea:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 2px #a78bfa22;
+}
