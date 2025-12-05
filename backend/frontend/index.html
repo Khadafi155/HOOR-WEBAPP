@@ -3,14 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hoor Assistant</title>
+  <title>Hoor</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
 <div id="hoor-root">
-  <div class="hoor-app hoor-view-chat">
+
+  <!-- NOTES VIEW (SEKARANG JADI DEFAULT) -->
+  <div class="hoor-app hoor-view-notes" id="hoorNotesView" style="display:flex;">
+    <header class="hoor-header">
+      <div class="hoor-header-main">
+        <div class="hoor-logo-circle"></div>
+        <div>
+          <div class="hoor-title">Hoor Notes</div>
+          <div class="hoor-subtitle">Personal To-do & Planning</div>
+        </div>
+      </div>
+      <button id="hoorBackToChatBtn" class="hoor-quick-exit">Back to Journal</button>
+    </header>
+
+    <main class="hoor-notes-container">
+      <h2>Today’s Notes</h2>
+      <ul class="hoor-notes-list">
+        <li><input type="checkbox" /> Groceries – fruits, vegetables, tea</li>
+        <li><input type="checkbox" /> Reply to two work emails</li>
+        <li><input type="checkbox" /> 10 minutes of stretching / breathing</li>
+        <li><input type="checkbox" /> Review personal budget</li>
+      </ul>
+
+      <h3>Extra reminders</h3>
+      <textarea class="hoor-notes-textarea" placeholder="Add your notes here..."></textarea>
+    </main>
+  </div>
+
+  <!-- CHAT VIEW (DISSEMBUNYIKAN DI AWAL) -->
+  <div class="hoor-app hoor-view-chat" id="hoorChatView" style="display:none;">
     
     <!-- HEADER -->
     <header class="hoor-header">
@@ -45,32 +74,6 @@
 
   </div>
 
-  <!-- NOTES VIEW -->
-  <div class="hoor-app hoor-view-notes" id="hoorNotesView" style="display:none;">
-    <header class="hoor-header">
-      <div class="hoor-header-main">
-        <div class="hoor-logo-circle"></div>
-        <div>
-          <div class="hoor-title">Hoor Notes</div>
-          <div class="hoor-subtitle">Personal To-do & Planning</div>
-        </div>
-      </div>
-      <button id="hoorBackToChatBtn" class="hoor-quick-exit">Back to Journal</button>
-    </header>
-
-    <main class="hoor-notes-container">
-      <h2>Today’s Notes</h2>
-      <ul class="hoor-notes-list">
-        <li><input type="checkbox" /> Groceries – fruits, vegetables, tea</li>
-        <li><input type="checkbox" /> Reply to two work emails</li>
-        <li><input type="checkbox" /> 10 minutes of stretching / breathing</li>
-        <li><input type="checkbox" /> Review personal budget</li>
-      </ul>
-
-      <h3>Extra reminders</h3>
-      <textarea class="hoor-notes-textarea" placeholder="Add your notes here..."></textarea>
-    </main>
-  </div>
 </div>
 
 <script src="app.js"></script>
