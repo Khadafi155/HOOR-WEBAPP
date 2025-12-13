@@ -1,4 +1,3 @@
-// server.js
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -7,18 +6,27 @@ import fetch from "node-fetch";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// ============ ENV SETUP ============
+// ============ PATH SETUP ============
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
+// ============ ENV SETUP ============
+const ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT; // https://awakening-assistant.openai.azure.com
 const MODEL = process.env.AZURE_OPENAI_MODEL || "awakening-assistant";
 const API_KEY = process.env.AZURE_OPENAI_API_KEY;
 
-if (!ENDPOINT || !API_KEY) {
-  console.warn("⚠️ Azure environment variables are missing!");
+const SEARCH_ENDPOINT = process.env.AZURE_SEARCH_ENDPOINT;
+const SEARCH_KEY = process.env.AZURE_SEARCH_KEY;
+const SEARCH_INDEX = process.env.AZURE_SEARCH_INDEX;
+
+if (!ENDPOINT || !API_KEY || !MODEL) {
+  console.warn("⚠️ Missing Azure OpenAI environment variables!");
+}
+if (!SEARCH_ENDPOINT || !SEARCH_KEY || !SEARCH_INDEX) {
+  console.warn("⚠️ Missing Azure Search environment variables!");
 }
 
+// ============ EXPRESS APP ============
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -33,19 +41,67 @@ app.get("/", (req, res) => {
 // ============ CHAT ROUTE ============
 app.post("/api/chat", async (req, res) => {
   try {
-    const userMsg = req.body.message || "";
+    // 👉 raw dari user
+    const rawUserMsg = req.body.message || "";
+
+    // 👉 tambah konteks supaya Azure Search tetap ngerti ini tentang Dimple Bindra
+    const userMsg = `${rawUserMsg}\n\n(Context: The user is asking about Dimple Bindra, her work, services, programs, and offerings.)`;
+
+    const apiVersion = "2025-01-01-preview";
+    const url = `${ENDPOINT}/openai/deployments/${MODEL}/chat/completions?api-version=${apiVersion}`;
+
+    const systemMessage = `
+You are HOOR, a gentle, trauma-informed emotional companion for women.
+
+LANGUAGE:
+- Always respond in the SAME language the user is using.
+- If the user mixes languages (English, Indonesian, Cantonese, slang), answer naturally in the same style, but softer and clearer.
+- Do NOT show citations like [doc1], [doc2], or any document/file names.
+
+STYLE:
+- Speak softly, warmly, and simply.
+- Keep responses short: about 1–3 small paragraphs.
+- Validate and normalize her feelings.
+- Offer simple grounding when emotions rise (e.g., "take a slow breath in… hold… and exhale gently").
+- You are NOT a doctor, lawyer, or crisis responder. Do not give medical, diagnostic, or legal advice.
+
+SAFETY:
+If the user expresses self-harm, danger, or abuse:
+"If you’re in immediate danger in Hong Kong, please dial 999 (SMS 992 for speech/hearing) or contact The Samaritans 24-hr 2389 2222 / 2389 2223. You’re not alone."
+
+After emotional topics, always add:
+"We can slow down or stop at any time."
+
+KNOWLEDGE:
+- Use the retrieved documents to answer about Dimple Bindra, her work, classes, and offerings.
+- Blend the information into a natural explanation without technical markers or [doc] citations.
+    `.trim();
 
     const payload = {
       model: MODEL,
       messages: [
-        { role: "system", content: "You are HOOR, a gentle, trauma-informed companion. Speak softly, warmly, simply for women’s healing. Use warm, validating, non-judgmental language. Offer simple grounding (e.g., “inhale 4 — hold 4 — exhale 6”, “sip water”) when distress appears. Do not provide medical, diagnostic, or legal advice. If the user mentions immediate danger or self-harm, include: “If you’re in immediate danger in Hong Kong, dial 999 (SMS 992 for speech/hearing) or contact The Samaritans 24-hr 2389 2222 / 2389 2223.” Keep answers short, compassionate, and avoid triggering detail. Add: “We can slow down or stop at any time.” after emotional topics." },
+        { role: "system", content: systemMessage },
         { role: "user", content: userMsg },
       ],
-      max_tokens: 4500,
+      data_sources: [
+        {
+          type: "azure_search",
+          parameters: {
+            endpoint: SEARCH_ENDPOINT,
+            index_name: SEARCH_INDEX,
+            authentication: {
+              type: "api_key",
+              key: SEARCH_KEY,
+            },
+            // tidak ada "citations" di sini
+          },
+        },
+      ],
+      max_tokens: 900,
       temperature: 0.7,
     };
 
-    const aiRes = await fetch(ENDPOINT, {
+    const aiRes = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,13 +111,16 @@ app.post("/api/chat", async (req, res) => {
     });
 
     if (!aiRes.ok) {
-      const errorMsg = await aiRes.text();
-      console.error("Azure Error:", errorMsg);
-      return res.status(500).json({ reply: `Azure error: ${errorMsg}` });
+      const errorText = await aiRes.text();
+      console.error("Azure Error:", aiRes.status, errorText);
+      return res
+        .status(500)
+        .json({ reply: `Azure error: ${aiRes.status} – ${errorText}` });
     }
 
     const data = await aiRes.json();
-    const reply = data?.choices?.[0]?.message?.content || "No reply from model.";
+    const reply =
+      data?.choices?.[0]?.message?.content || "No reply from model.";
 
     res.json({ reply });
   } catch (err) {
@@ -72,8 +131,5 @@ app.post("/api/chat", async (req, res) => {
 
 // ============ START SERVER ============
 const PORT = process.env.PORT || 3000;
-
-// 🔥 NO LOCALHOST MESSAGE
-console.log(`Backend running on PORT ${PORT}`);
-
+console.log(`HOOR backend running on PORT ${PORT}`);
 app.listen(PORT);

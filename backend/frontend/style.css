@@ -128,11 +128,12 @@ body {
 
 .hoor-message-bubble {
   display: inline-block;
-  padding: 10px 14px;
+  padding: 12px 16px;           /* sedikit lebih longgar */
   border-radius: 14px;
   font-size: 14px;
-  line-height: 1.45;
+  line-height: 1.5;
   word-wrap: break-word;
+  white-space: pre-line;        /* hormati \n, tapi tidak selebar pre-wrap */
 }
 
 /* User bubble */
@@ -253,4 +254,29 @@ body {
 .hoor-notes-textarea:focus {
   border-color: #a78bfa;
   box-shadow: 0 0 0 2px #a78bfa22;
+}
+
+/* ------------------------------
+   FIX: RAPATKAN OPENING MESSAGE
+--------------------------------*/
+.hoor-chat-container .hoor-message:first-child .hoor-message-bubble {
+  white-space: normal !important;   /* hilangkan perilaku pre-line */
+  line-height: 1.35 !important;     /* lebih rapat seperti versi kanan */
+  padding: 12px 16px !important;
+}
+
+/* Hilangkan <br> hanya di message pertama */
+.hoor-chat-container .hoor-message:first-child .hoor-message-bubble br {
+  display: none !important;
+}
+
+/* Rapikan paragraf dalam opening bubble */
+.hoor-chat-container .hoor-message:first-child .hoor-message-bubble p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Tambahkan sedikit spacing halus antar paragraf (opsional) */
+.hoor-chat-container .hoor-message:first-child .hoor-message-bubble p + p {
+  margin-top: 4px !important;
 }

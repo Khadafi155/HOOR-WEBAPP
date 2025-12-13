@@ -1,4 +1,4 @@
-const API_URL = "/api/chat"; 
+const API_URL = "http://localhost:3000/api/chat"; 
 // Ganti ke: https://awakening-assistant.azurewebsites.net/api/chat saat live
 
 const form = document.getElementById("hoorForm");
@@ -32,14 +32,41 @@ function getTimestamp() {
   return formatTime();
 }
 
-
 function appendMessage(role, text) {
   const msg = document.createElement("div");
-  msg.className = "hoor-message " + (role === "user" ? "hoor-message-user" : "hoor-message-assistant");
+  msg.className =
+    "hoor-message " +
+    (role === "user" ? "hoor-message-user" : "hoor-message-assistant");
 
   const bubble = document.createElement("div");
   bubble.className = "hoor-message-bubble";
-  bubble.textContent = text;
+
+  // ---------- FORMATTER ----------
+  // 0. escape < >
+  let safeText = text
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  // 1. Markdown link: [label](https://url)
+  safeText = safeText.replace(
+    /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+  );
+
+  // 2. Hapus em-dash (—) biar nggak ganggu
+  safeText = safeText.replace(/—/g, "");
+
+  // 3. **bold**  → <strong>
+  safeText = safeText.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+
+  // 4. *italic* (single star) → juga <strong>
+  safeText = safeText.replace(/\*(.+?)\*/g, "<strong>$1</strong>");
+
+  // 5. newline → <br>
+  safeText = safeText.replace(/\n/g, "<br>");
+
+  bubble.innerHTML = safeText;
+  // ---------- END FORMATTER ----------
 
   const meta = document.createElement("div");
   meta.className = "hoor-message-meta";
