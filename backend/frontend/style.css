@@ -7,16 +7,18 @@ body {
 }
 
 #hoor-root {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 40px 0;
+  width: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
 }
+
 
 /* ----------- APP BOX ----------- */
 .hoor-app {
   width: 100%;
-  height: 75vh;
-  max-height: 760px;
+  height: 100dvh;
+  max-height: none;
   display: flex;
   flex-direction: column;
   background: #ffffff;
@@ -279,4 +281,46 @@ body {
 /* Tambahkan sedikit spacing halus antar paragraf (opsional) */
 .hoor-chat-container .hoor-message:first-child .hoor-message-bubble p + p {
   margin-top: 4px !important;
+}
+
+/* ================================
+   RESPONSIVE FIX (iPhone / Mobile)
+   Keep desktop look, fix mobile crop
+================================== */
+
+/* Pastikan layout pakai full height */
+html, body {
+  height: 100%;
+}
+
+/* Desktop tetap center */
+#hoor-root {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Mobile: hilangkan padding besar yang bikin kepotong */
+@media (max-width: 640px) {
+  #hoor-root {
+    max-width: 100%;
+    margin: 0;
+    padding: 0; /* penting */
+  }
+
+  .hoor-app {
+    height: 100dvh;            /* fix address bar mobile */
+    max-height: none;
+    border-radius: 0;
+  }
+
+  /* Biar input nggak ketutup home indicator iPhone */
+  .hoor-input-bar {
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+
+  /* Biar konten chat/notes bisa scroll normal */
+  .hoor-chat-container,
+  .hoor-notes-container {
+    -webkit-overflow-scrolling: touch;
+  }
 }
