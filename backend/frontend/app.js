@@ -1,5 +1,4 @@
-const API_URL = "api/chat"; 
-// Ganti ke: https://awakening-assistant.azurewebsites.net/api/chat saat live
+const API_URL = "/api/chat";
 
 const form = document.getElementById("hoorForm");
 const input = document.getElementById("hoorInput");
@@ -12,23 +11,67 @@ const backToChatBtn = document.getElementById("hoorBackToChatBtn");
 const notesView = document.getElementById("hoorNotesView");
 const chatView = document.querySelector(".hoor-view-chat");
 
+// ==============================
+// Partner detection (Direct vs Partner)
+// ==============================
+function sanitizePartnerCode(s) {
+  const v = String(s || "").trim();
+  if (!v) return "";
+  return /^[A-Za-z0-9_-]{2,80}$/.test(v) ? v : "";
+}
+
+function getPartnerCodeFromUrl() {
+  // support /p/HK_CORP_001
+  const parts = window.location.pathname.split("/").filter(Boolean);
+  const pIndex = parts.indexOf("p");
+  if (pIndex !== -1 && parts[pIndex + 1]) return sanitizePartnerCode(parts[pIndex + 1]);
+
+  // fallback support ?partner=HK_CORP_001
+  const url = new URL(window.location.href);
+  return sanitizePartnerCode(url.searchParams.get("partner"));
+}
+
+const partnerFromUrl = getPartnerCodeFromUrl();
+const partner_code = partnerFromUrl ? partnerFromUrl : "DIRECT";
+const access_type = partnerFromUrl ? "partner" : "direct";
+
+// ==============================
+// Anonymous user + session (crypto-safe)
+// ==============================
+function cryptoId(prefix) {
+  try {
+    if (window.crypto?.randomUUID) return `${prefix}_${crypto.randomUUID().replaceAll("-", "")}`;
+    const arr = new Uint8Array(16);
+    window.crypto.getRandomValues(arr);
+    const hex = Array.from(arr).map(b => b.toString(16).padStart(2, "0")).join("");
+    return `${prefix}_${hex}`;
+  } catch {
+    return `${prefix}_${Math.random().toString(16).slice(2)}${Date.now().toString(16)}`;
+  }
+}
+
+let anonymous_user_id = localStorage.getItem("anonymous_user_id");
+if (!anonymous_user_id) {
+  anonymous_user_id = cryptoId("u");
+  localStorage.setItem("anonymous_user_id", anonymous_user_id);
+}
+
+let session_id = sessionStorage.getItem("session_id");
+if (!session_id) {
+  session_id = cryptoId("s");
+  sessionStorage.setItem("session_id", session_id);
+}
+
+// ==============================
+// UI helpers
+// ==============================
 function formatTime() {
   const now = new Date();
   const hours = now.getHours().toString().padStart(2, "0");
   const minutes = now.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
 }
-
-// NEW: message timestamp generator
 function getTimestamp() {
-  const now = new Date();
-  const today = new Date();
-
-  if (now.toDateString() === today.toDateString()) {
-    return formatTime();
-  }
-
-  // FIX: supaya tidak return undefined
   return formatTime();
 }
 
@@ -41,32 +84,19 @@ function appendMessage(role, text) {
   const bubble = document.createElement("div");
   bubble.className = "hoor-message-bubble";
 
-  // ---------- FORMATTER ----------
-  // 0. escape < >
-  let safeText = text
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  let safeText = String(text || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-  // 1. Markdown link: [label](https://url)
   safeText = safeText.replace(
     /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
     '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
   );
 
-  // 2. Hapus em-dash (—) biar nggak ganggu
   safeText = safeText.replace(/—/g, "");
-
-  // 3. **bold**  → <strong>
   safeText = safeText.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-
-  // 4. *italic* (single star) → juga <strong>
   safeText = safeText.replace(/\*(.+?)\*/g, "<strong>$1</strong>");
-
-  // 5. newline → <br>
   safeText = safeText.replace(/\n/g, "<br>");
 
   bubble.innerHTML = safeText;
-  // ---------- END FORMATTER ----------
 
   const meta = document.createElement("div");
   meta.className = "hoor-message-meta";
@@ -83,9 +113,7 @@ function appendTyping() {
   const msg = document.createElement("div");
   msg.id = "hoor-typing";
   msg.className = "hoor-message hoor-message-assistant";
-  msg.innerHTML = `
-    <div class="hoor-message-bubble">Hoor is thinking...</div>
-  `;
+  msg.innerHTML = `<div class="hoor-message-bubble">Hoor is thinking...</div>`;
   chatContainer.appendChild(msg);
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
@@ -95,6 +123,9 @@ function removeTyping() {
   if (t) t.remove();
 }
 
+// ==============================
+// Submit chat
+// ==============================
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -102,6 +133,7 @@ form.addEventListener("submit", async (e) => {
   if (!text) return;
 
   appendMessage("user", text);
+
   input.value = "";
   sendBtn.disabled = true;
 
@@ -111,13 +143,20 @@ form.addEventListener("submit", async (e) => {
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text })
+      body: JSON.stringify({
+        message: text,
+        partner_code,
+        access_type, // ok to send, server will re-derive
+        anonymous_user_id,
+        session_id,
+      }),
     });
 
     removeTyping();
 
     if (!res.ok) {
       appendMessage("assistant", "Sorry, something went wrong. Try again later.");
+      sendBtn.disabled = false;
       return;
     }
 
@@ -142,12 +181,9 @@ backToChatBtn.onclick = () => {
   chatView.style.display = "flex";
 };
 
-// Update timestamp untuk pesan pembuka yang statis di HTML
 document.addEventListener("DOMContentLoaded", () => {
   const firstMeta = chatContainer.querySelector(
     ".hoor-message-assistant .hoor-message-meta"
   );
-  if (firstMeta) {
-    firstMeta.textContent = `Hoor · ${getTimestamp()}`;
-  }
+  if (firstMeta) firstMeta.textContent = `Hoor · ${getTimestamp()}`;
 });

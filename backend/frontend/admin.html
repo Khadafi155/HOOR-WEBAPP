@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HOOR — Dashboard</title>
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+
+<body>
+  <div class="admin-root">
+
+    <header class="admin-header">
+      <div class="admin-header-main">
+        <div class="hoor-logo-circle"></div>
+        <div>
+          <div class="admin-title">Hoor</div>
+          <div class="admin-subtitle">Reporting</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-container">
+
+      <section class="admin-card admin-hero">
+        <h2 class="admin-hero-title">Hoor Dashboard</h2>
+
+        <p class="admin-muted">
+          Privacy-first, aggregated only. No identities, no content.
+        </p>
+
+        <!-- Key Access + Enter + tip -->
+        <div class="admin-key-row">
+          <div class="admin-key-label">
+            <span class="admin-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path fill="currentColor" d="M14.5 10a4.5 4.5 0 1 0-1.1 2.95L15 14.55V17h2v2h2v-3.45l-3.2-3.2c.45-.65.7-1.44.7-2.35Zm-7 0A2.5 2.5 0 1 1 10 12.5 2.5 2.5 0 0 1 7.5 10Z"/>
+              </svg>
+            </span>
+            Key Access
+          </div>
+
+          <div class="admin-key-actions">
+            <input id="adminToken" class="admin-key-input" placeholder="Please enter key access" />
+
+            <!-- ENTER KEY BUTTON -->
+            <button id="enterKeyBtn" class="btn-secondary">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                  <path fill="currentColor" d="M5 12h12l-4-4 1.4-1.4L21.8 12l-7.4 7.4L13 18l4-4H5z"/>
+                </svg>
+              </span>
+              Enter
+            </button>
+          </div>
+
+          <div class="admin-key-tip admin-muted">
+            Tip: Enter Key Access to see Hoor Analytics
+          </div>
+        </div>
+      </section>
+
+      <!-- Filters + actions in one row -->
+      <section class="admin-card">
+        <div class="admin-filters-header">
+          <h3 class="admin-section-title">
+            <span class="admin-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path fill="currentColor" d="M3 5h18v2H3V5Zm4 6h10v2H7v-2Zm3 6h4v2h-4v-2Z"/>
+              </svg>
+            </span>
+            Filters
+          </h3>
+
+          <div class="admin-actions admin-actions-inline">
+            <!-- APPLY FILTER BUTTON -->
+            <button id="applyFilterBtn" class="btn-primary">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                  <path fill="currentColor" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4Z"/>
+                </svg>
+              </span>
+              Apply Filter
+            </button>
+
+            <button id="exportBtn" class="btn-secondary">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                  <path fill="currentColor" d="M5 20h14v-2H5v2Zm7-18-5.5 5.5 1.4 1.4L11 6.8V16h2V6.8l3.1 3.1 1.4-1.4L12 2Z"/>
+                </svg>
+              </span>
+              Export CSV
+            </button>
+
+            <button id="clearBtn" class="btn-ghost">
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                  <path fill="currentColor" d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7 4.3 4.3l6.3 6.3 6.3-6.3 1.4 1.4Z"/>
+                </svg>
+              </span>
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="admin-filters">
+          <select id="accessType">
+            <option value="">Access: All</option>
+            <option value="partner">Access: Partner</option>
+            <option value="direct">Access: General</option>
+          </select>
+
+          <input id="dateFrom" type="date" />
+          <input id="dateTo" type="date" />
+        </div>
+      </section>
+
+      <!-- Stats cards -->
+      <section class="admin-stats">
+        <div class="stat-card">
+          <div class="stat-label">Total Users</div>
+          <div id="statTotalUsers" class="stat-value">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Daily Active User</div>
+          <div id="statDAU" class="stat-value">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Weekly Active User</div>
+          <div id="statWAU" class="stat-value">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Messages</div>
+          <div id="statMessages" class="stat-value">—</div>
+        </div>
+      </section>
+
+      <!-- Charts -->
+      <section class="admin-card">
+        <h3 class="admin-section-title">
+          <span class="admin-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path fill="currentColor" d="M3 3h2v18H3V3Zm16 18H7v-2h12v2ZM7 17l4-4 3 3 6-7 1.5 1.3-7.5 9-3-3-4 4L7 17Z"/>
+            </svg>
+          </span>
+          Statistic
+        </h3>
+        <p class="admin-muted">Daily activity and message volume (based on message_sent only).</p>
+
+        <div class="admin-charts">
+          <div class="admin-chart">
+            <div class="admin-muted" style="margin-bottom:6px">Daily Active User (per day)</div>
+            <canvas id="chartDAU" width="1000" height="260"></canvas>
+          </div>
+          <div class="admin-chart">
+            <div class="admin-muted" style="margin-bottom:6px">Messages (per day)</div>
+            <canvas id="chartMessages" width="1000" height="260"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- User Summary + pagination -->
+      <section class="admin-card">
+        <div class="admin-table-header">
+          <h3 class="admin-section-title">
+            <span class="admin-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path fill="currentColor" d="M3 3h18v18H3V3Zm2 2v4h14V5H5Zm0 6v8h4v-8H5Zm6 0v8h8v-8h-8Z"/>
+              </svg>
+            </span>
+            User Summary
+          </h3>
+
+          <div class="admin-pager">
+            <button id="summaryPrev" class="btn-secondary btn-sm" disabled>Prev</button>
+            <div id="summaryPageInfo" class="admin-muted">Page 1 / 1</div>
+            <button id="summaryNext" class="btn-secondary btn-sm" disabled>Next</button>
+          </div>
+        </div>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Access from</th>
+              <th>Total Users</th>
+              <th>Daily Active User</th>
+              <th>Weekly Active User</th>
+              <th>Messages</th>
+              <th>Last Active</th>
+            </tr>
+          </thead>
+          <tbody id="summaryBody">
+            <tr>
+              <td colspan="7" class="admin-muted">No data yet. Click “Apply Filter”.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Anonymous Users + pagination -->
+      <section class="admin-card">
+        <div class="admin-table-header">
+          <div>
+            <h3 class="admin-section-title">
+              <span class="admin-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                  <path fill="currentColor" d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3ZM8 11c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5C23 14.17 18.33 13 16 13Z"/>
+                </svg>
+              </span>
+              Anonymous Users
+            </h3>
+            <p class="admin-muted">No identity, no content. Activity is based on message_sent only.</p>
+          </div>
+
+          <div class="admin-pager">
+            <button id="usersPrev" class="btn-secondary btn-sm" disabled>Prev</button>
+            <div id="usersPageInfo" class="admin-muted">Page 1 / 1</div>
+            <button id="usersNext" class="btn-secondary btn-sm" disabled>Next</button>
+          </div>
+        </div>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Code</th>
+              <th>Access from</th>
+              <th>Messages</th>
+              <th>First Active</th>
+              <th>Last Active</th>
+              <th>Active Days</th>
+            </tr>
+          </thead>
+          <tbody id="usersBody">
+            <tr>
+              <td colspan="7" class="admin-muted">No data yet. Click “Apply Filter”.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

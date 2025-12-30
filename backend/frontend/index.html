@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hoor</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
 
 <body>
 
 <div id="hoor-root">
 
-  <!-- NOTES VIEW (SEKARANG JADI DEFAULT) -->
+  <!-- NOTES VIEW (DEFAULT / SAFE VIEW) -->
   <div class="hoor-app hoor-view-notes" id="hoorNotesView" style="display:flex;">
     <header class="hoor-header">
       <div class="hoor-header-main">
@@ -21,26 +21,44 @@
           <div class="hoor-subtitle">Personal To-do & Planning</div>
         </div>
       </div>
-      <button id="hoorBackToChatBtn" class="hoor-quick-exit">Back to Journal</button>
+      <button id="hoorBackToChatBtn" class="hoor-quick-exit">
+        Back to Journal
+      </button>
     </header>
 
     <main class="hoor-notes-container">
       <h2>Today’s Notes</h2>
+
       <ul class="hoor-notes-list">
-        <li><input type="checkbox" /> Groceries – fruits, vegetables, tea</li>
-        <li><input type="checkbox" /> Reply to two work emails</li>
-        <li><input type="checkbox" /> 10 minutes of stretching / breathing</li>
-        <li><input type="checkbox" /> Review personal budget</li>
+        <li>
+          <input type="checkbox" />
+          Groceries – fruits, vegetables, tea
+        </li>
+        <li>
+          <input type="checkbox" />
+          Reply to two work emails
+        </li>
+        <li>
+          <input type="checkbox" />
+          10 minutes of stretching / breathing
+        </li>
+        <li>
+          <input type="checkbox" />
+          Review personal budget
+        </li>
       </ul>
 
       <h3>Extra reminders</h3>
-      <textarea class="hoor-notes-textarea" placeholder="Add your notes here..."></textarea>
+      <textarea
+        class="hoor-notes-textarea"
+        placeholder="Add your notes here..."
+      ></textarea>
     </main>
   </div>
 
-  <!-- CHAT VIEW (DISSEMBUNYIKAN DI AWAL) -->
+  <!-- CHAT VIEW (HIDDEN INITIALLY) -->
   <div class="hoor-app hoor-view-chat" id="hoorChatView" style="display:none;">
-    
+
     <!-- HEADER -->
     <header class="hoor-header">
       <div class="hoor-header-main">
@@ -50,30 +68,39 @@
           <div class="hoor-subtitle">Daily Reflection & Wellness</div>
         </div>
       </div>
-      <button id="hoorQuickExitBtn" class="hoor-quick-exit">Back to Notes</button>
+      <button id="hoorQuickExitBtn" class="hoor-quick-exit">
+        Back to Notes
+      </button>
     </header>
 
-      <!-- CHAT -->
+    <!-- CHAT CONTAINER -->
     <main id="hoorChatContainer" class="hoor-chat-container">
       <div class="hoor-message hoor-message-assistant">
         <div class="hoor-message-bubble">
-          Hi love💜, welcome. You can use this space to reflect, unload your thoughts, or share whatever is on your mind today.
+          Hi love💜, welcome. You can use this space to reflect, unload your thoughts,
+          or share whatever is on your mind today.
         </div>
         <div class="hoor-message-meta">Hoor · just now</div>
       </div>
     </main>
 
-    <!-- INPUT -->
+    <!-- INPUT BAR -->
     <form id="hoorForm" class="hoor-input-bar">
-      <textarea id="hoorInput" class="hoor-input"
-        placeholder="Type something..." rows="1"></textarea>
-      <button type="submit" class="hoor-send-btn">Send</button>
+      <textarea
+        id="hoorInput"
+        class="hoor-input"
+        placeholder="Type something..."
+        rows="1"
+      ></textarea>
+      <button type="submit" class="hoor-send-btn">
+        Send
+      </button>
     </form>
 
   </div>
 
 </div>
 
-<script src="app.js"></script>
+<script src="/app.js"></script>
 </body>
 </html>
