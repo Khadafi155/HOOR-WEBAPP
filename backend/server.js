@@ -57,11 +57,18 @@ const dbPool = mysql.createPool({
   connectionLimit: 5,
 });
 
-
 function sanitizePartnerCode(s) {
   const v = String(s || "").trim();
   if (!v) return "";
   return /^[A-Za-z0-9_-]{2,80}$/.test(v) ? v : "";
+}
+
+// ✅ STRICT partner validation for /p/:partner_code route
+function isValidPartnerCode(code) {
+  if (!code) return false;
+  if (code === "DIRECT") return false;
+  if (PARTNER_CODES.size === 0) return false; // strict: no allowlist => no partner links
+  return PARTNER_CODES.has(code);
 }
 
 function normalizePartnerCode(input) {
@@ -123,7 +130,17 @@ app.use(express.static(path.join(__dirname, "frontend")));
 
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "frontend", "index.html")));
 app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "frontend", "admin.html")));
-app.get("/p/:partner_code", (req, res) => res.sendFile(path.join(__dirname, "frontend", "index.html")));
+
+// ✅ STRICT: invalid partner_code => 404 Not Found
+app.get("/p/:partner_code", (req, res) => {
+  const code = sanitizePartnerCode(req.params.partner_code);
+
+  if (!isValidPartnerCode(code)) {
+    return res.status(404).send("Not Found");
+  }
+
+  return res.sendFile(path.join(__dirname, "frontend", "index.html"));
+});
 
 // ==============================
 // Simple rate limiting (in-memory)

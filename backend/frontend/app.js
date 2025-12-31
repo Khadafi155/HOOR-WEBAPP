@@ -31,9 +31,21 @@ function getPartnerCodeFromUrl() {
   return sanitizePartnerCode(url.searchParams.get("partner"));
 }
 
+// ✅ Persist partner_code so attribution doesn't break across sessions
+const PARTNER_STORAGE_KEY = "hoor_partner_code";
+
 const partnerFromUrl = getPartnerCodeFromUrl();
-const partner_code = partnerFromUrl ? partnerFromUrl : "DIRECT";
-const access_type = partnerFromUrl ? "partner" : "direct";
+
+// If user arrived via /p/:partner_code, store it (server is strict, so this is safe)
+if (partnerFromUrl) {
+  localStorage.setItem(PARTNER_STORAGE_KEY, partnerFromUrl);
+}
+
+const storedPartner = sanitizePartnerCode(localStorage.getItem(PARTNER_STORAGE_KEY));
+
+// final partner_code used for telemetry
+const partner_code = partnerFromUrl || storedPartner || "DIRECT";
+const access_type = partner_code !== "DIRECT" ? "partner" : "direct";
 
 // ==============================
 // Anonymous user + session (crypto-safe)
